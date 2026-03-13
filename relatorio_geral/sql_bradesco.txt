@@ -1,0 +1,32 @@
+SELECT
+  EXTRACT(YEAR  FROM PARSE_DATE('%d/%m/%Y', mes_resumido))                     AS `Ano`,
+  EXTRACT(MONTH FROM PARSE_DATE('%d/%m/%Y', mes_resumido))                     AS `Mês`,
+  'Bradesco'                                                                   AS `Operadora`,
+  tipo_de_conta                                                                AS `Tipo de Conta`,
+  nome_do_referenciado                                                         AS `Prestador`,
+  codigo_do_referenciado                                                       AS `CNPJ do Prestador`,
+  estado_do_referenciado                                                       AS `Estado`,
+  ROUND(SUM(cobrado), 2)                                                       AS `Valor Cobrado`,
+  ROUND(SUM(liberado), 2)                                                      AS `Valor Liberado`,
+  ROUND(SUM(cobrado) - SUM(liberado), 2)                                       AS `Valor Glosado`,
+  COUNT(DISTINCT senha)                                                        AS `Quantidade de Internações`,
+  COUNT(*)                                                                     AS `Quantidade de Contas`,
+  ROUND(SAFE_DIVIDE(SUM(liberado), COUNT(DISTINCT senha)), 2)                  AS `CMPI`,
+  ROUND(SAFE_DIVIDE(SUM(liberado), SUM(diarias)), 2)                           AS `CMPD`,
+  ROUND(SAFE_DIVIDE(SUM(diarias), COUNT(DISTINCT senha)), 2)                   AS `TMI`
+FROM
+  `power-bi-data-455019.bradesco_data.bradesco_ofensores`
+WHERE
+  mes_resumido IS NOT NULL
+  AND FORMAT_DATE('%m%y', PARSE_DATE('%d/%m/%Y', mes_resumido)) = @anomes
+GROUP BY
+  EXTRACT(YEAR  FROM PARSE_DATE('%d/%m/%Y', mes_resumido)),
+  EXTRACT(MONTH FROM PARSE_DATE('%d/%m/%Y', mes_resumido)),
+  tipo_de_conta,
+  nome_do_referenciado,
+  codigo_do_referenciado,
+  estado_do_referenciado
+ORDER BY
+  `Ano`,
+  `Mês`,
+  `CNPJ do Prestador`;

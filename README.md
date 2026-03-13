@@ -1,2 +1,0 @@
-# scripts_engenharia_de_dados
-# scripts_engenharia_de_dados
